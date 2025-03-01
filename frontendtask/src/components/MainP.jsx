@@ -1,8 +1,8 @@
 
-import { tasks } from "../data";
 
 
-import  Tasks  from "./tasks";
+
+import  Tasks  from "./tasks/tasks";
 
 export default function MainPage(props) {
   return (
@@ -13,7 +13,7 @@ export default function MainPage(props) {
         organizing, tracking, and completing tasks in real time, empowering teams
         and individuals to stay on top of deadlines and achieve their goals
         efficiently.</div>
-        <Tasks tasks={tasks}/>
+        <Tasks />
     </div>);
 }
 

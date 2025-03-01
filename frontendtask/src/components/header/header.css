@@ -4,7 +4,6 @@
 header {
     background-color:  #f5f5f5;
     padding: 20px;
-    text-align: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -13,3 +12,7 @@ header h1 {
     font-size: 2rem;
     color: #333;
 }
+.headerName {
+    text-align: left;
+}
+

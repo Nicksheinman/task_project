@@ -1,7 +1,7 @@
 
 
 
-export let tasks=[ 
+export let data=[ 
     {
         "id": 4,
         "user": 2,
