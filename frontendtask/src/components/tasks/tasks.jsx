@@ -6,7 +6,7 @@ import { data } from "../../data";
 
 function Tasks() {
   const [tasks, setTasks]=useState(data);
-  const [newTask, setNewTask]=useState({title:'',description:'',status:''});
+  const [newTask, setNewTask]=useState({title:'',description:'',status:false});
   const addTask=()=>{
     if (!newTask.title.trim()) return;
     const createTask={
@@ -20,7 +20,7 @@ function Tasks() {
   }
   return (
     <div className="tasksManager">
-      <TaskList data={data}/>
+      <TaskList data={tasks} />
       <TaskAdd setNewTask={setNewTask}  addTask={addTask} newTask={newTask}/>
     </div>
   )
