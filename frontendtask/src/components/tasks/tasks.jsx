@@ -24,7 +24,6 @@ function Tasks() {
       <TaskAdd setNewTask={setNewTask}  addTask={addTask} newTask={newTask}/>
     </div>
   )
-
 }
 
 export default Tasks;
