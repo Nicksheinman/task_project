@@ -1,8 +1,7 @@
-import axios from "axios";
 
 
+function LoginForm() {
 
-function Login() {
     return (
         <div className="login">
             <input type="text" />
@@ -12,4 +11,4 @@ function Login() {
     )
 }
 
-export default Login;
+export default LoginForm;

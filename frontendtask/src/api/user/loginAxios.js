@@ -12,7 +12,7 @@ export const login=async(email,password)=> {
 
 export const refreshToken=async ()=> {
     const response= await api.post("token/refresh/");
-    return response.data.acess;
+    return response.data.acсess;
 };
 
 export const getTask=async (acessToken)=> {

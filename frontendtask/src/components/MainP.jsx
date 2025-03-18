@@ -2,7 +2,7 @@ import Tasks from "./tasks/tasks";
 import  Header  from "./header/Header";
 import { useState } from "react";
 import AboutUs from "./aboutUs/aboutUs";
-import Login from "./user/login"
+import LoginForm from "./user/login"
 export default function MainPage(props) {
   const [content, setContent]=useState('aboutUs')
   return (
@@ -10,7 +10,7 @@ export default function MainPage(props) {
       <Header setContent={setContent} />
       {content==="aboutUs"&& (<AboutUs />)}
       {content==="tasks"&& (<Tasks />)}
-      {content==="login"&& (<Login />)}
+      {content==="login"&& (<LoginForm />)}
       <div className="content"></div>
     </div>
   );
