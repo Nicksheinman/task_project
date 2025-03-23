@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createContext, useState, useEffect } from "react";
-import { login, refreshToken } from "../../api/user/loginAxios";
+import { login, refreshToken } from "../../api/user/contentAxios";
 
 export const AuthContext= createContext();
 
@@ -10,19 +10,19 @@ export const AuthProvider=({children})=> {
 
     useEffect(()=>{
         refreshToken()
-            .then((newAсcessToken)=>{
-                setAccessToken(newAсcessToken);
+            .then((newAccessToken)=>{
+                setAccessToken(newAccessToken);
             })
             .catch(()=> {
                 setAccessToken(null)
             })
             .finally(()=>setLoading(false))
     }, [])
-    const handleLogin= async (email,password) =>{
+    const handleLogin= async (username,password) =>{
         try {
-            const data= await login(email, password);
+            const data= await login(username, password);
             setAccessToken(data.access);
-        } catch {
+        } catch(error) {
             console.log('entry error', error);
         }
     }
@@ -34,4 +34,4 @@ export const AuthProvider=({children})=> {
             {children}
         </AuthContext.Provider>
     )
-}
+} 
