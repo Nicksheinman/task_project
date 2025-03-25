@@ -66,5 +66,4 @@ This project is open to collaboration! If you're interested, feel free to fork t
 MIT License
 
 ---
-
-*Made with 💡 by Nicksheinman*
+Made with 💡 and Django magic by Nicksheinman.
