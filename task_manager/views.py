@@ -1,6 +1,5 @@
 from rest_framework import generics, viewsets, permissions, status
 from django.forms import model_to_dict
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import render
 from .models import Task
@@ -23,7 +22,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             
             response.set_cookie(
                 key=settings.SIMPLE_JWT["AUTH_COOKIE"],
-                value=refresh,
+                value=access,
                 httponly=True,
                 secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
                 samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],

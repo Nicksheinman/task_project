@@ -1,13 +1,25 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TaskAdd from "./taskAdd";
 import TaskList from "./taskList";
 import { getTask } from "../../api/user/contentAxios";
 
-console.log(getTask())
+
 function Tasks() {
   const [tasks, setTasks]=useState([]);
   const [newTask, setNewTask]=useState({title:'',description:'',status:false});
+  useEffect(()=>{
+    async function fetchTask() {
+      try {
+        const response= await getTask();
+        setTasks(response);
+      } catch (error) {
+        console.error("error:", error);
+      }
+    }
+    fetchTask();
+  },[])
+  
   const addTask=()=>{
     if (!newTask.title.trim()) return;
     const createTask={
