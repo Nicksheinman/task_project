@@ -1,4 +1,5 @@
 from rest_framework import generics, viewsets, permissions, status
+from rest_framework.views import APIView
 from django.forms import model_to_dict
 from rest_framework.response import Response
 from django.shortcuts import render
@@ -17,17 +18,26 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             access=response.data.get('access')
             refresh=response.data.get('refresh')
             
-            response.data.pop('access', None)
-            response.data.pop('refresh', None)
-            
             response.set_cookie(
                 key=settings.SIMPLE_JWT["AUTH_COOKIE"],
                 value=access,
                 httponly=True,
                 secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
                 samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
+                max_age=60 *  15, 
+
+            )
+            response.set_cookie(
+                key=settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"],
+                value=refresh,
+                httponly=True,
+                secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
+                samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
                 max_age=60 *  60 * 24 * 7, 
             )
+            response.data.pop('access', None)
+            response.data.pop('refresh', None)
+            
         return response
     
 class CookieTokenRefreshView(TokenRefreshView):
@@ -64,3 +74,8 @@ class TaskAPI(viewsets.ModelViewSet):
         return Task.objects.filter(user=self.request.user)
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+        
+class AuthCheck(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def get(self, request):
+        return Response({"isAuthenticated":True})

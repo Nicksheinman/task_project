@@ -10,19 +10,19 @@ api.interceptors.response.use(
     async error => {
       const originalRequest = error.config;
   
-      // if (error.response?.status === 401 && !originalRequest._retry) {
-      //   originalRequest._retry = true;
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
   
-      //   try {
-      //     await api.post("token/refresh/");
-      //     return api(originalRequest);
+        try {
+          await api.post("token/refresh/");
+          return api(originalRequest);
   
-      //   } catch (refreshError) {
-      //     console.error("error with updating token", refreshError);
-      //     window.location.href = "/login";
-      //     return Promise.reject(refreshError);
-      //   }
-      // }
+        } catch (refreshError) {
+          console.error("error with updating token", refreshError);
+          window.location.href = "/login";
+          return Promise.reject(refreshError);
+        }
+      }
   
       return Promise.reject(error);
     }
