@@ -1,14 +1,18 @@
-import axios from "axios";
-import { createContext, useState, useEffect } from "react";
-import { login, refreshToken } from "../../api/user/contentAxios";
+import { useNavigate } from "react-router-dom";
+import React, { createContext, useState, useEffect } from "react";
+import api, { login, refreshToken, authCheck } from "../../api/user/contentAxios";
 
 export const AuthContext= createContext();
 
 export const AuthProvider=({children})=> {
     const [accessToken, setAccessToken]=useState(null);
     const [loading, setLoading]=useState(true);
-
+    const [isAuthenticated, setAuth]=useState(false)
     useEffect(()=>{
+        const checkAuth=async ()=> {
+            const token=await authCheck()
+            setAuth(token)
+        }
         refreshToken()
             .then((newAccessToken)=>{
                 setAccessToken(newAccessToken);
@@ -17,11 +21,14 @@ export const AuthProvider=({children})=> {
                 setAccessToken(null)
             })
             .finally(()=>setLoading(false))
+        checkAuth()
     }, [])
+    const navigate=useNavigate();
     const handleLogin= async (username,password) =>{
         try {
             const data= await login(username, password);
             setAccessToken(data.access);
+            navigate('/')
         } catch(error) {
             console.log('entry error', error);
         }
@@ -30,7 +37,7 @@ export const AuthProvider=({children})=> {
         setAccessToken(null);
     };
     return (
-        <AuthContext.Provider value={{accessToken, handleLogin, handleLogout, loading}}>
+        <AuthContext.Provider value={{isAuthenticated, handleLogin, handleLogout, loading}}>
             {children}
         </AuthContext.Provider>
     )

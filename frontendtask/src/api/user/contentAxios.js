@@ -14,7 +14,7 @@ api.interceptors.response.use(
         originalRequest._retry = true;
   
         try {
-          await api.post("token/refresh/");
+          await api.post("token/refresh/",{}, { withCredentials:true});
           return api(originalRequest);
   
         } catch (refreshError) {
@@ -29,12 +29,12 @@ api.interceptors.response.use(
   );
 
 const login=async(username,password)=> {
-    const response=await api.post('token/',{username,password});
+    const response=await api.post('token/',{username,password}, { withCredentials:true});
     return response.data
 };
 
 const refreshToken=async ()=> {
-    const response= await api.post("token/refresh/");
+    const response= await api.post("token/refresh/", {}, { withCredentials:true});
     return response.data.access;
 };
 
@@ -43,6 +43,11 @@ const getTask=async ()=> {
     return response.data;
 }
 
-export { login, refreshToken, getTask };
+const authCheck=async ()=> {
+  const response=await api.post('/token/check/' , {}, { withCredentials:true})
+  if (response.data["isAuthenticated"]===true) {return true}
+  else {return false}
+}
+export { login, refreshToken, getTask, authCheck };
 
 export default api;

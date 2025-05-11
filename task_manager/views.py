@@ -76,6 +76,9 @@ class TaskAPI(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
         
 class AuthCheck(APIView):
-    permission_classes=[permissions.IsAuthenticated]
-    def get(self, request):
+    def post(self, request):
+        print(request.user.is_authenticated)
+        print('test')
+        if not request.user.is_authenticated:
+            return Response({"isAuthenticated":False}, status=200)
         return Response({"isAuthenticated":True})

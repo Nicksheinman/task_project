@@ -1,4 +1,4 @@
-import logo from "./logo.svg";
+import { BrowserRouter } from "react-router-dom";
 import "./App.css";
 import { AuthProvider } from "./components/user/authContext";
 
@@ -6,11 +6,11 @@ import  MainPage  from "./components/MainP";
 
 function App() {
   return (
-    <AuthProvider>
-      <MainPage />
-    </AuthProvider>
-      
-    
+    <BrowserRouter>
+      <AuthProvider>
+        <MainPage />
+      </AuthProvider>
+    </BrowserRouter>   
   );
 }
 
