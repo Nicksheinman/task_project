@@ -7,17 +7,21 @@ import { useState, useContext} from "react";
 import AboutUs from "./aboutUs/aboutUs";
 
 import LoginForm from "./user/login"
+import { Route, Routes } from "react-router-dom";
 
 export default function MainPage() {
   const [content, setContent]=useState('aboutUs');
-  const { isAuthenticated }=useContext(AuthContext)
+  const { isAuthenticated }=useContext(AuthContext);
+  console.log(isAuthenticated)
   return (
     <div className="main">
 
       <Header setContent={setContent} isAuthenticated={isAuthenticated}/>
-      {content==="aboutUs"&& (<AboutUs />)}
-      {content==="tasks"&& (<Tasks />)}
-      {content==="login"&& (<LoginForm/>)}
+      <Routes>
+        <Route path="/" element={<AboutUs/>}/>
+        <Route path="/tasks" element={<Tasks/>}/>
+        <Route path="/login_form" element={<LoginForm/>}/>
+      </Routes>
       <div className="content"></div>
     </div>
   );

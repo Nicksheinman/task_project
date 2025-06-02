@@ -39,7 +39,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             response.data.pop('refresh', None)
             
         return response
-    
+
 class CookieTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         refresh_token=request.COOKIES.get(settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"])
@@ -65,7 +65,7 @@ class CookieTokenRefreshView(TokenRefreshView):
                 max_age=60 * 15,
             )
         return response
-    
+
 class TaskAPI(viewsets.ModelViewSet):
     queryset= Task.objects.all()
     serializer_class=TaskSerializer
@@ -74,7 +74,7 @@ class TaskAPI(viewsets.ModelViewSet):
         return Task.objects.filter(user=self.request.user)
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-        
+
 class AuthCheck(APIView):
     def post(self, request):
         print(request.user.is_authenticated)

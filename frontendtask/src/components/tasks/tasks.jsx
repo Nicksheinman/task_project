@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import TaskAdd from "./taskAdd";
 import TaskList from "./taskList";
 import { getTask } from "../../api/user/contentAxios";
-
+import { postTask } from "../../api/user/contentAxios";
+import Update from "./update";
 
 function Tasks() {
   const [tasks, setTasks]=useState([]);
   const [newTask, setNewTask]=useState({title:'',description:'',status:false});
-  useEffect(()=>{
+    useEffect(()=>{
     async function fetchTask() {
       try {
         const response= await getTask();
@@ -19,21 +20,28 @@ function Tasks() {
     }
     fetchTask();
   },[])
-  
-  const addTask=()=>{
-    if (!newTask.title.trim()) return;
+
+  const addTask= async ()=>{
+    if (!newTask.title.trim()) {
+      alert("Please enter a task title!");
+      return;}
     const createTask={
-      id: Date.now(),
       title:newTask.title,
       description:newTask.description,
       status:false
     }
-   
-    setTasks([...tasks, createTask]);
+    const post=await postTask(createTask)
+    try {
+        const response= await getTask();
+        setTasks(response);
+      } catch (error) {
+        console.error("error:", error);
+      }
     setNewTask({ title: "", description: "", status: false });
   }
   return (
     <div className="tasksManager">
+      <Update />
       <TaskList data={tasks} />
       <TaskAdd setNewTask={setNewTask}  addTask={addTask} newTask={newTask}/>
     </div>

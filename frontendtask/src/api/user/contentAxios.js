@@ -43,11 +43,16 @@ const getTask=async ()=> {
     return response.data;
 }
 
+const postTask=async (json)=> {
+  const response= await api.post("task/", json);
+  return response
+}
+
 const authCheck=async ()=> {
   const response=await api.post('/token/check/' , {}, { withCredentials:true})
   if (response.data["isAuthenticated"]===true) {return true}
   else {return false}
 }
-export { login, refreshToken, getTask, authCheck };
+export { login, refreshToken, getTask, postTask, authCheck };
 
 export default api;

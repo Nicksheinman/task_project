@@ -28,7 +28,8 @@ export const AuthProvider=({children})=> {
         try {
             const data= await login(username, password);
             setAccessToken(data.access);
-            navigate('/')
+            setAuth(true);
+            navigate('/');
         } catch(error) {
             console.log('entry error', error);
         }
@@ -41,4 +42,4 @@ export const AuthProvider=({children})=> {
             {children}
         </AuthContext.Provider>
     )
-} 
+}
