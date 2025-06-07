@@ -12,7 +12,6 @@ import { Route, Routes } from "react-router-dom";
 export default function MainPage() {
   const [content, setContent]=useState('aboutUs');
   const { isAuthenticated }=useContext(AuthContext);
-  console.log(isAuthenticated)
   return (
     <div className="main">
 

@@ -1,7 +1,8 @@
 import { useState } from "react";
 
 
-function Task({task, update}) {
+function Task({task, updateList}) {
+        const [id]=useState(task.id);
         const [titleC, setTitle]=useState(task.title);
         const [textaC, setTextarea]=useState(task.description);
         const [status, setStatus]=useState(task.status);
@@ -11,25 +12,32 @@ function Task({task, update}) {
                 description:task.description,
                 status:task.status
         };
-        const newT={};
         const changedTask=()=> {
+                const newT={id:task.id,};
                 if (titleC!==original.title) {newT.title=titleC};
-                if (titleC!==original.title) {newT.description=textaC};
-                if (titleC!==original.title) {newT.status=status};
+                if (textaC!==original.description) {newT.description=textaC};
+                if (status!==original.status) {newT.status=status};
                 return newT
         };
         const handleCheckbox=()=>{
-                if (select===true) {
-                        changedTask();
-                        update(newT);
+                const newT=changedTask();
+                if (Object.keys(newT).length>1) {
+                        updateList(newT);
                 }
         }
+        
         return (
                 <div className="task" key={task.id} id={task.id}>
                         <input className="taskName" type="text" value={titleC} onChange={e=>setTitle(e.target.value)}/>
                         <textarea className="taskDescription" id="" value={textaC} onChange={e=>setTextarea(e.target.value)}></textarea>
                         <input type="checkbox" name="" checked={status} onChange={e=>setStatus(e.target.checked)} /> status
-                        <input type="checkbox" name="" checked={select} onChange={e=>setSelect(e.target.checked)} /> select
+                        <input type="checkbox" name="" checked={select} onChange={e=>{
+                                setSelect(e.target.checked);
+                                const check=e.target.checked;
+                                if (check) {
+                                        handleCheckbox()
+                                }
+                                }} /> select
                         <div className="status"></div>
                 </div>)
 }

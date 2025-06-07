@@ -1,11 +1,11 @@
 
 
-const Update=()=> {
-
-
-
+const Update=({updateTasks})=> {
+    const updateAllTasks=()=>{
+        console.log(updateTasks)
+    }
     return (
-        <button>update</button>
+        <button onClick={()=>updateAllTasks()}>update</button>
     )
 }
 

@@ -39,9 +39,9 @@ function Tasks() {
       }
     setNewTask({ title: "", description: "", status: false });
   }
+
   return (
     <div className="tasksManager">
-      <Update />
       <TaskList data={tasks} />
       <TaskAdd setNewTask={setNewTask}  addTask={addTask} newTask={newTask}/>
     </div>
