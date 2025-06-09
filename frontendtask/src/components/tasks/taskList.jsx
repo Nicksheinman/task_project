@@ -5,13 +5,16 @@ import { useEffect } from "react";
 function TaskList({data}) {
   const [updateTasks, setUpdateTasks]=useState({});
   const updateList=(newT)=>{
-    const exist=newT.id
-    if (exist) {
-      const updated = { ...prev };
-      delete updated[newT.id];
-      return updated;
-    }
-    setUpdateTasks(prev => [...prev, {newT}]);
+    setUpdateTasks(prev => {
+      const exist=prev[newT.id];
+      if (exist) {
+        const updated = { ...prev };
+        delete updated[newT.id];
+        return updated;
+      } else {
+        return {...prev, [newT.id]:newT}
+      }
+    });
   }
    useEffect(() => {
     console.log("updated updateTasks:", updateTasks);

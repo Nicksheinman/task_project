@@ -43,6 +43,14 @@ const getTask=async ()=> {
     return response.data;
 }
 
+const updateTasks=  (tasks)=> {
+    const response=async ()=> {
+      for (const task in tasks) {
+        const responseTask= await api.put('task/')
+      }
+    }
+}
+
 const postTask=async (json)=> {
   const response= await api.post("task/", json);
   return response

@@ -32,12 +32,9 @@ function Task({task, updateList}) {
                         <textarea className="taskDescription" id="" value={textaC} onChange={e=>setTextarea(e.target.value)}></textarea>
                         <input type="checkbox" name="" checked={status} onChange={e=>setStatus(e.target.checked)} /> status
                         <input type="checkbox" name="" checked={select} onChange={e=>{
-                                setSelect(e.target.checked);
-                                const check=e.target.checked;
-                                if (check) {
-                                        handleCheckbox()
-                                }
-                                }} /> select
+                                setSelect(e.target.checked);                             
+                                handleCheckbox()
+                                }} />select
                         <div className="status"></div>
                 </div>)
 }
