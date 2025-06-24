@@ -3,7 +3,7 @@ import Task from "./task";
 import Update from "./update";
 import { useEffect } from "react";
 function TaskList({data}) {
-  const [updateTasks, setUpdateTasks]=useState({});
+  const [updateTasks, setUpdateTasks]=useState([]);
   const updateList=(newT)=>{
     setUpdateTasks(prev => {
       const exist=prev[newT.id];
@@ -12,7 +12,7 @@ function TaskList({data}) {
         delete updated[newT.id];
         return updated;
       } else {
-        return {...prev, [newT.id]:newT}
+        return [...prev, newT]
       }
     });
   }

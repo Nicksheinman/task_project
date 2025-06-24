@@ -1,8 +1,10 @@
-
+import { updateTasksAxios } from "../../api/user/contentAxios"
 
 const Update=({updateTasks})=> {
     const updateAllTasks=()=>{
-        console.log(updateTasks)
+        const resultUpdate= updateTasksAxios(updateTasks);
+        console.log(resultUpdate);
+        return resultUpdate
     }
     return (
         <button onClick={()=>updateAllTasks()}>update</button>

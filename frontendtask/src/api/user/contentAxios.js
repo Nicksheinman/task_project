@@ -43,12 +43,19 @@ const getTask=async ()=> {
     return response.data;
 }
 
-const updateTasks=  (tasks)=> {
-    const response=async ()=> {
-      for (const task in tasks) {
-        const responseTask= await api.put('task/')
-      }
-    }
+const updateTasksAxios=(tasks)=> {
+  let response_obj={};
+  console.log(tasks);
+  console.log(tasks);
+  console.log(typeof tasks)
+  for (const task of tasks) {
+    let responseTask=  api.patch(`task/${task.id}/`,task)
+    .then(res => console.log('its ok ', res)
+    ).catch (res => console.log('problem ', res))
+    response_obj={...response_obj, [task.id]:responseTask}
+  }
+  console.log(response_obj)
+  return response_obj
 }
 
 const postTask=async (json)=> {
@@ -61,6 +68,6 @@ const authCheck=async ()=> {
   if (response.data["isAuthenticated"]===true) {return true}
   else {return false}
 }
-export { login, refreshToken, getTask, postTask, authCheck };
+export { login, refreshToken, getTask, postTask, authCheck, updateTasksAxios };
 
 export default api;
