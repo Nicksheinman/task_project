@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
-function Task({task, updateList}) {
+function Task({task, updateList, tasksList, updateSingle, deleteSingle}) {
         const [id]=useState(task.id);
         const [titleC, setTitle]=useState(task.title);
         const [textaC, setTextarea]=useState(task.description);
         const [status, setStatus]=useState(task.status);
         const [select, setSelect]=useState(false);
         const original= {
+                id:task.id,
                 title:task.title,
                 description:task.description,
                 status:task.status
@@ -19,23 +20,54 @@ function Task({task, updateList}) {
                 if (status!==original.status) {newT.status=status};
                 return newT
         };
-        const handleCheckbox=()=>{
-                const newT=changedTask();
-                if (Object.keys(newT).length>1) {
-                        updateList(newT);
+
+        useEffect(()=>{
+                const newT={id:task.id,};
+                if (titleC!==original.title) {newT.title=titleC};
+                if (textaC!==original.description) {newT.description=textaC};
+                if (status!==original.status) {newT.status=status};
+                if (Object.keys(newT).length>1) {tasksList(newT)}
+        }, [titleC, textaC, status])
+
+        const changeTask=(value, type)=> {
+                if (type==="title") {
+                        setTitle(value);
                 }
+                if (type==="description") {
+                        setTextarea(value);
+                }
+                if (type==="status") {
+                        setStatus(value);
+                }
+        }
+
+
+        const handleCheckbox=()=>{
+                const newT=changedTask();              
+                updateList(newT);
+             
         }
         
         return (
                 <div className="task" key={task.id} id={task.id}>
-                        <input className="taskName" type="text" value={titleC} onChange={e=>setTitle(e.target.value)}/>
-                        <textarea className="taskDescription" id="" value={textaC} onChange={e=>setTextarea(e.target.value)}></textarea>
-                        <input type="checkbox" name="" checked={status} onChange={e=>setStatus(e.target.checked)} /> status
+                        <input className="taskName" type="text" value={titleC} onChange={e=>{
+                                let type="title";
+                                let value=e.target.value;
+                                changeTask(value, type);}}/>
+                        <textarea className="taskDescription" id="" value={textaC} onChange={e=>{
+                                let type="description";
+                                let value=e.target.value;
+                                changeTask(value, type);}}></textarea>
+                        <input type="checkbox" name="" checked={status} onChange={e=>{
+                                let type="status";
+                                let value=e.target.checked;
+                                changeTask(value, type);}} /> status
                         <input type="checkbox" name="" checked={select} onChange={e=>{
                                 setSelect(e.target.checked);                             
-                                handleCheckbox()
+                                handleCheckbox();
                                 }} />select
-                        <div className="status"></div>
+                        <input type="button" value="update" onClick={()=>{updateSingle(original.id)}} />
+                        <input type="button" value="delete" onClick={()=>{deleteSingle(original.id)}} />
                 </div>)
 }
 

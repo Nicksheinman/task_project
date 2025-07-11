@@ -1,13 +1,26 @@
-import { updateTasksAxios } from "../../api/user/contentAxios"
+import { updateTasksAxios, deleteTasksAxios } from "../../api/user/contentAxios"
 
-const Update=({updateTasks})=> {
+const Update=({selectTasks, changedTasks, setSelectTasks, deleteAllTasks})=> {
     const updateAllTasks=()=>{
-        const resultUpdate= updateTasksAxios(updateTasks);
-        console.log(resultUpdate);
-        return resultUpdate
-    }
+        if (Object.keys(selectTasks).length!==0) {
+            let tasksToUpdate={}
+            for (let task of Object.values(changedTasks)) {
+                if (selectTasks.hasOwnProperty(task.id)) {
+                    tasksToUpdate[task.id]=task;
+                }
+            }
+            if (Object.keys(tasksToUpdate).length>0) {
+                const resultUpdate= updateTasksAxios(tasksToUpdate);
+                return resultUpdate}
+            }
+            return null
+        }        
+
     return (
-        <button onClick={()=>updateAllTasks()}>update</button>
+        <div>
+            <button onClick={()=>updateAllTasks()}>update</button>
+            <button onClick={()=>deleteAllTasks()}>delete</button>
+        </div>
     )
 }
 

@@ -4,7 +4,7 @@ import TaskAdd from "./taskAdd";
 import TaskList from "./taskList";
 import { getTask } from "../../api/user/contentAxios";
 import { postTask } from "../../api/user/contentAxios";
-import Update from "./update";
+
 
 function Tasks() {
   const [tasks, setTasks]=useState([]);
@@ -20,7 +20,7 @@ function Tasks() {
     }
     fetchTask();
   },[])
-
+  
   const addTask= async ()=>{
     if (!newTask.title.trim()) {
       alert("Please enter a task title!");
@@ -42,11 +42,10 @@ function Tasks() {
 
   return (
     <div className="tasksManager">
-      <TaskList data={tasks} />
+      <TaskList data={tasks} setTasks={setTasks}/>
       <TaskAdd setNewTask={setNewTask}  addTask={addTask} newTask={newTask}/>
     </div>
   )
 }
 
 export default Tasks;
-

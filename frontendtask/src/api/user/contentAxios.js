@@ -45,17 +45,22 @@ const getTask=async ()=> {
 
 const updateTasksAxios=(tasks)=> {
   let response_obj={};
-  console.log(tasks);
-  console.log(tasks);
-  console.log(typeof tasks)
-  for (const task of tasks) {
+  for (let task of Object.values(tasks)) {
     let responseTask=  api.patch(`task/${task.id}/`,task)
-    .then(res => console.log('its ok ', res)
-    ).catch (res => console.log('problem ', res))
     response_obj={...response_obj, [task.id]:responseTask}
   }
   console.log(response_obj)
   return response_obj
+}
+
+const deleteTasksAxios=(tasks)=> {
+  let response_obj={};
+  let deletedId=[]
+  for (const task of Object.values(tasks)) {
+    let responseTask=  api.delete(`task/${task.id}/`,task)
+    .then(deletedId=[...deletedId, task.id])
+  }
+  return deletedId
 }
 
 const postTask=async (json)=> {
@@ -68,6 +73,7 @@ const authCheck=async ()=> {
   if (response.data["isAuthenticated"]===true) {return true}
   else {return false}
 }
-export { login, refreshToken, getTask, postTask, authCheck, updateTasksAxios };
+
+export {login, refreshToken, getTask, postTask, authCheck, updateTasksAxios, deleteTasksAxios};
 
 export default api;
