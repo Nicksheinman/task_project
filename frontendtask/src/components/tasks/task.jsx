@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 
-function Task({task, updateList, tasksList, updateSingle, deleteSingle}) {
+function Task({task, updateList, tasksList, updateSingle, deleteSingle, changeRefs}) {
         const [id]=useState(task.id);
         const [titleC, setTitle]=useState(task.title);
         const [textaC, setTextarea]=useState(task.description);
         const [status, setStatus]=useState(task.status);
         const [select, setSelect]=useState(false);
-        const original= {
+
+        const original= useRef({
                 id:task.id,
                 title:task.title,
                 description:task.description,
                 status:task.status
-        };
+        });
         const changedTask=()=> {
                 const newT={id:task.id,};
                 if (titleC!==original.title) {newT.title=titleC};
@@ -20,12 +21,12 @@ function Task({task, updateList, tasksList, updateSingle, deleteSingle}) {
                 if (status!==original.status) {newT.status=status};
                 return newT
         };
-
+ 
         useEffect(()=>{
                 const newT={id:task.id,};
-                if (titleC!==original.title) {newT.title=titleC};
-                if (textaC!==original.description) {newT.description=textaC};
-                if (status!==original.status) {newT.status=status};
+                if (titleC!==original.current.title) {newT.title=titleC};
+                if (textaC!==original.current.description) {newT.description=textaC};
+                if (status!==original.current.status) {newT.status=status};
                 if (Object.keys(newT).length>1) {tasksList(newT)}
         }, [titleC, textaC, status])
 
@@ -41,10 +42,9 @@ function Task({task, updateList, tasksList, updateSingle, deleteSingle}) {
                 }
         }
 
-
         const handleCheckbox=()=>{
                 const newT=changedTask();              
-                updateList(newT);
+                updateList(newT, original);
              
         }
         
@@ -66,7 +66,7 @@ function Task({task, updateList, tasksList, updateSingle, deleteSingle}) {
                                 setSelect(e.target.checked);                             
                                 handleCheckbox();
                                 }} />select
-                        <input type="button" value="update" onClick={()=>{updateSingle(original.id)}} />
+                        <input type="button" value="update" onClick={()=>{updateSingle(original.id, original)}} />
                         <input type="button" value="delete" onClick={()=>{deleteSingle(original.id)}} />
                 </div>)
 }

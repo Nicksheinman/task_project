@@ -39,17 +39,28 @@ const refreshToken=async ()=> {
 };
 
 const getTask=async ()=> {
-    const response=await api.get('task/');
-    return response.data;
+    const response=(await api.get('task/')).data;
+    return response;
 }
 
-const updateTasksAxios=(tasks)=> {
+
+const updateTasksAxios=async (tasks)=> {
   let response_obj={};
   for (let task of Object.values(tasks)) {
-    let responseTask=  api.patch(`task/${task.id}/`,task)
-    response_obj={...response_obj, [task.id]:responseTask}
+    try {
+      let responseTask=await  api.patch(`task/${task.id}/`,task)
+      let changedTask={id:responseTask.data.id}
+      if (task.title===responseTask.data.title) {changedTask.title=task.title}
+      if (task.description===responseTask.data.description) {changedTask.description=task.description}
+      if (task.status===responseTask.data.status) {changedTask.status=task.status}
+      let allData={ success:true, data:changedTask}
+      response_obj={...response_obj, [task.id]:allData}
+      }
+    catch (error) {
+      let allData={ success:false, error}
+      response_obj={...response_obj, [task.id]:allData}
+    }
   }
-  console.log(response_obj)
   return response_obj
 }
 

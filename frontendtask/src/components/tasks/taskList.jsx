@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Task from "./task";
 import Update from "./update";
 import { updateTasksAxios, deleteTasksAxios } from "../../api/user/contentAxios";
@@ -6,7 +6,13 @@ import { updateTasksAxios, deleteTasksAxios } from "../../api/user/contentAxios"
 
 function TaskList({data, setTasks}) {
   const [selectTasks, setSelectTasks]=useState({});
+  const [selectOriginal, setSelectOriginal]=useState({})
   const [changedTasks, setChangedTasks]=useState({});
+  const [confirmedTasks, setConfirmedTasks] = useState({});
+  
+  useEffect(()=>{
+    console.log(confirmedTasks)
+  }, [confirmedTasks])
 
   const tasksList=(newT)=>{
     setChangedTasks(prev=>{
@@ -14,16 +20,27 @@ function TaskList({data, setTasks}) {
     })
   }
 
+  useEffect(()=> {
+    console.log(selectOriginal)
+  }, [selectOriginal])
 
-  const updateList=(newT)=>{
+  const updateList=(newT, original)=>{
     setSelectTasks(prev => {
       const exist=prev[newT.id];
       const idTask=newT.id
       if (exist) {
+        setSelectOriginal(prev=>{
+          const updatedO = { ...prev };
+          delete updatedO[newT.id];
+          return updatedO;
+        })
         const updated = { ...prev };
         delete updated[newT.id];
         return updated;
       } else {
+        setSelectOriginal(prev=>{
+          return {...prev, [idTask]:original}
+        })
         return {...prev, [idTask]:newT}
       }
     });
@@ -37,14 +54,39 @@ function TaskList({data, setTasks}) {
     }
   }
   
+  const updateAllTasks=async ()=>{
+    if (Object.keys(selectTasks).length!==0) {
+        let tasksToUpdate={}
+        for (let task of Object.values(changedTasks)) {
+            if (selectTasks.hasOwnProperty(task.id) &&
+             (!confirmedTasks[task.id] ||
+              JSON.stringify(task)!==JSON.stringify(confirmedTasks[130].data))) {
+                tasksToUpdate[task.id]=task;
+            }
+        }
+        if (Object.keys(tasksToUpdate).length>0) {
+            const resultUpdate=await updateTasksAxios(tasksToUpdate);
+            for (let id in resultUpdate) {
+              setConfirmedTasks(prev=>{
+                return {...prev, [Number(id)] :resultUpdate[id]}
+              })
+            }
+            return resultUpdate}
+        }
+      }
+        
+
   const deleteSingle=(id)=>{
     for (let task of data) {
       if (task.id===id) {
         deleteTasksAxios({id:task})
         setTasks(prev=>prev.filter(task=>task.id!==id))
-        for (let taskSelecect in selectTasks) {
-          if (taskSelecect.id===task.id) { setSelectTasks(prev=>prev.filter(task=>task.id!==id))}
+        let updateSelect={...selectTasks}
+        for (let taskSelecect in updateSelect) {
+          if (id===Number(taskSelecect))
+            delete updateSelect[taskSelecect]
         }
+        setSelectTasks(updateSelect)
       }
     }}
   
@@ -54,17 +96,19 @@ function TaskList({data, setTasks}) {
       if (Object.keys(deleteTask).length!==0) {
           const resultDelete= deleteTasksAxios(taskToDelete)
           for (const id of resultDelete) {
-              prev.filter(task => !resultDelete.includes(task.id))}}
+            setTasks(prev =>
+              prev.filter(task => !resultDelete.includes(task.id))
+            )}}
           setSelectTasks({})
           return deleteTask
       }
-    
+    const changeRefs = useRef({});
   return (
     <div className="tasksList">
       {data.map((task, key)=>(
-        <Task task={task} key={task.id} updateList={updateList} tasksList={tasksList} updateSingle={updateSingle} deleteSingle={deleteSingle}/>
+        <Task task={task} key={task.id} updateList={updateList} tasksList={tasksList} updateSingle={updateSingle} deleteSingle={deleteSingle} changedCheck={false} changeRefs={(changeRefs.current[task.id] = { current: false })}/>
       ))}
-      <Update selectTasks={selectTasks} setSelectTasks={setSelectTasks} changedTasks={changedTasks} deleteAllTasks={deleteAllTasks}/>
+      <Update selectTasks={selectTasks} setSelectTasks={setSelectTasks} changedTasks={changedTasks} deleteAllTasks={deleteAllTasks} selectOriginal={selectOriginal} updateAllTasks={updateAllTasks}/>
     </div>
   )
   }
