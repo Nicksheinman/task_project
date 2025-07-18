@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
+import { deleteTasksAxios, updateTasksAxios } from "../../api/user/contentAxios";
 
-
-function Task({task, updateList, tasksList, updateSingle, deleteSingle, changeRefs}) {
+function Task({task, updateList, tasksList, data, selectTasks, setTasks, setSelectTasks, changedTasks, confirmedTask, setConfirmedTasks}) {
         const [id]=useState(task.id);
         const [titleC, setTitle]=useState(task.title);
         const [textaC, setTextarea]=useState(task.description);
@@ -47,7 +47,32 @@ function Task({task, updateList, tasksList, updateSingle, deleteSingle, changeRe
                 updateList(newT, original);
              
         }
-        
+
+        const deleteSingle=(id)=>{
+                for (let task of data) {
+                if (task.id===id) {
+                        deleteTasksAxios({id:task})
+                        setTasks(prev=>prev.filter(task=>task.id!==id))
+                        let updateSelect={...selectTasks}
+                        for (let taskSelecect in updateSelect) {
+                        if (id===Number(taskSelecect))
+                        delete updateSelect[taskSelecect]}          
+                        setSelectTasks(updateSelect)
+                }
+                }}
+        const updateSingle=async (id)=> {
+                for (let task of Object.values(changedTasks)) {
+                if (task.id===id && 
+                        (!confirmedTask[id] || 
+                                JSON.stringify(task)!==JSON.stringify(confirmedTask[id]))) {
+                        const newT=await updateTasksAxios({[id]:task})
+                        console.log(newT)
+                        setConfirmedTasks(prev=>{
+                                return {...prev, [id] :task}
+                        })
+                }}}
+
+
         return (
                 <div className="task" key={task.id} id={task.id}>
                         <input className="taskName" type="text" value={titleC} onChange={e=>{
@@ -66,8 +91,8 @@ function Task({task, updateList, tasksList, updateSingle, deleteSingle, changeRe
                                 setSelect(e.target.checked);                             
                                 handleCheckbox();
                                 }} />select
-                        <input type="button" value="update" onClick={()=>{updateSingle(original.id, original)}} />
-                        <input type="button" value="delete" onClick={()=>{deleteSingle(original.id)}} />
+                        <input type="button" value="update" onClick={()=>{updateSingle(original.current.id)}} />
+                        <input type="button" value="delete" onClick={()=>{deleteSingle(original.current.id)}} />
                 </div>)
 }
 
