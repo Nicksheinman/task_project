@@ -30,9 +30,11 @@ const Update=({ changedTasks, selectTasks, confirmedTasks, setConfirmedTasks, da
         if (Object.keys(tasksToUpdate).length>0) {
             const resultUpdate=await updateTasksAxios(tasksToUpdate);
             for (let id in resultUpdate) {
-              setConfirmedTasks(prev=>{
-                return {...prev, [Number(id)] :resultUpdate[id]}
-              })
+              if (resultUpdate[id].success===true) {
+                 setConfirmedTasks(prev=>{
+                  return {...prev, [Number(id)] :resultUpdate[id]}
+              })}
+              else {console.log('error')}
             }
             return resultUpdate}
         }

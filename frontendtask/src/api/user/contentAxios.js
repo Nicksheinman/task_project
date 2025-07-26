@@ -2,8 +2,14 @@ import axios from 'axios';
 
 const api=axios.create({
     baseURL: "http://localhost:8000/api/v1/", 
-    withCredentials:true
+    withCredentials:true,
 });
+
+api.interceptors.request.use((config)=>
+  {const csrfToken=(document.cookie).split("=")[1]
+  if (csrfToken) {config.headers['X-CSRFToken']=csrfToken}
+  return config}
+)
 
 api.interceptors.response.use(
     response => response,
@@ -27,6 +33,22 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
   );
+
+api.interceptors.response.use(
+  res => res,
+  async error => {
+    if (
+      error.response?.status === 403 &&
+      typeof error.response?.data === 'string' &&
+      error.response.data.includes("CSRF")
+    ) {
+      await api.get("/csrf/");
+      return api(error.config);
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 const login=async(username,password)=> {
     const response=await api.post('token/',{username,password}, { withCredentials:true});

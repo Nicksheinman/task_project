@@ -9,8 +9,11 @@ from .permissions import IsUserOrStaff
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from django.conf import settings
-
-
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_protect
+from django.utils.decorators import method_decorator
+ 
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         response=super().post(request, *args, **kwargs)
@@ -66,6 +69,7 @@ class CookieTokenRefreshView(TokenRefreshView):
             )
         return response
 
+@method_decorator(csrf_protect, name='dispatch')
 class TaskAPI(viewsets.ModelViewSet):
     queryset= Task.objects.all()
     serializer_class=TaskSerializer
@@ -77,8 +81,10 @@ class TaskAPI(viewsets.ModelViewSet):
 
 class AuthCheck(APIView):
     def post(self, request):
-        print(request.user.is_authenticated)
-        print('test')
         if not request.user.is_authenticated:
             return Response({"isAuthenticated":False}, status=200)
         return Response({"isAuthenticated":True})
+    
+@ensure_csrf_cookie
+def Get_csrf(request):
+    return JsonResponse({"detail": "CSRF cookie set"})
