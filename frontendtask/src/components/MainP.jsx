@@ -5,7 +5,7 @@ import  Header  from "./header/Header";
 import { useState, useContext} from "react";
 
 import AboutUs from "./aboutUs/aboutUs";
-
+import Register_form from "./user/register";
 import LoginForm from "./user/login"
 import { Route, Routes } from "react-router-dom";
 
@@ -20,6 +20,7 @@ export default function MainPage() {
         <Route path="/" element={<AboutUs/>}/>
         <Route path="/tasks" element={<Tasks/>}/>
         <Route path="/login_form" element={<LoginForm/>}/>
+        <Route path="/register_form" element={<Register_form/>}/>
       </Routes>
       <div className="content"></div>
     </div>

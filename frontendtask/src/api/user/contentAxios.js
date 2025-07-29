@@ -16,7 +16,9 @@ api.interceptors.response.use(
     async error => {
       const originalRequest = error.config;
   
-      if (error.response?.status === 401 && !originalRequest._retry) {
+      if (error.response?.status === 403 && 
+        !originalRequest._retry &&
+        error.response.data.detail==='Authentication credentials were not provided.') {
         originalRequest._retry = true;
   
         try {
@@ -28,31 +30,28 @@ api.interceptors.response.use(
           window.location.href = "/login";
           return Promise.reject(refreshError);
         }
-      }
-  
+      }  
+      if (
+          error.response?.status === 403 &&
+          typeof error.response?.data === 'string' &&
+          error.response.data.includes("CSRF")
+        ) {
+          await api.get("/csrf/");
+          return api(error.config);
+        }
+
       return Promise.reject(error);
     }
   );
 
-api.interceptors.response.use(
-  res => res,
-  async error => {
-    if (
-      error.response?.status === 403 &&
-      typeof error.response?.data === 'string' &&
-      error.response.data.includes("CSRF")
-    ) {
-      await api.get("/csrf/");
-      return api(error.config);
-    }
-
-    return Promise.reject(error);
-  }
-);
 
 const login=async(username,password)=> {
     const response=await api.post('token/',{username,password}, { withCredentials:true});
     return response.data
+};
+
+const logout=async()=> {
+    await api.get('token/logout/', { withCredentials:true});
 };
 
 const refreshToken=async ()=> {
@@ -107,6 +106,6 @@ const authCheck=async ()=> {
   else {return false}
 }
 
-export {login, refreshToken, getTask, postTask, authCheck, updateTasksAxios, deleteTasksAxios};
+export {login, refreshToken, getTask, postTask, authCheck, updateTasksAxios, deleteTasksAxios, logout};
 
 export default api;

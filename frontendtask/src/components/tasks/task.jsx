@@ -65,8 +65,7 @@ function Task({task, updateList, tasksList, data, selectTasks, setTasks, setSele
                 if (task.id===id && 
                         (!confirmedTask[id] || 
                                 JSON.stringify(task)!==JSON.stringify(confirmedTask[id]))) {
-                        const newT=await updateTasksAxios({[id]:task})
-                        console.log(newT)
+                        await updateTasksAxios({[id]:task})
                         setConfirmedTasks(prev=>{
                                 return {...prev, [id] :task}
                         })

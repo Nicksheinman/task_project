@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import React, { createContext, useState, useEffect } from "react";
-import api, { login, refreshToken, authCheck } from "../../api/user/contentAxios";
+import { createContext, useState, useEffect } from "react";
+import { login, refreshToken, authCheck, logout } from "../../api/user/contentAxios";
 
 export const AuthContext= createContext();
 
@@ -35,7 +35,9 @@ export const AuthProvider=({children})=> {
         }
     }
     const handleLogout=()=> {
-        setAccessToken(null);
+        logout();
+        setAuth(false)
+        navigate('/login_form')
     };
     return (
         <AuthContext.Provider value={{isAuthenticated, handleLogin, handleLogout, loading}}>

@@ -4,7 +4,7 @@ from django.forms import model_to_dict
 from rest_framework.response import Response
 from django.shortcuts import render
 from .models import Task
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer, RegisterSerializer
 from .permissions import IsUserOrStaff
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
@@ -13,6 +13,8 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
  
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
@@ -88,3 +90,40 @@ class AuthCheck(APIView):
 @ensure_csrf_cookie
 def Get_csrf(request):
     return JsonResponse({"detail": "CSRF cookie set"})
+
+
+class Logout_view(APIView):
+    def get(self, request):
+        response = Response({"detail": "Successfully logged out"})
+        response.delete_cookie("refresh_token")
+        response.delete_cookie("access_token")
+        return response
+    
+
+
+class Register_view(APIView):
+    def post(self, request):
+        serializer=RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user=serializer.save()
+            refresh=RefreshToken.for_user(user)
+            response=Response({"message": "User created"}, status=status.HTTP_201_CREATED)
+            response.set_cookie(
+                key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+                value=str(refresh.access_token),
+                httponly=True,
+                secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
+                samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
+                max_age=60 *  15, 
+
+            )
+            response.set_cookie(
+                key=settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"],
+                value=str(refresh),
+                httponly=True,
+                secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
+                samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
+                max_age=60 *  60 * 24 * 7, 
+            )
+            return response
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
