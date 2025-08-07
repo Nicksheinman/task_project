@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from django.forms import model_to_dict
 from rest_framework.response import Response
 from django.shortcuts import render
-from .models import Task
-from .serializers import TaskSerializer, RegisterSerializer
+from .models import Task, EmailVerification
+from .serializers import TaskSerializer, RegisterSerializer, ConfirmSerializer
 from .permissions import IsUserOrStaff
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
@@ -15,7 +15,8 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
- 
+from .services.email import send_email
+
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         response=super().post(request, *args, **kwargs)
@@ -99,15 +100,35 @@ class Logout_view(APIView):
         response.delete_cookie("access_token")
         return response
     
-
-
 class Register_view(APIView):
     def post(self, request):
         serializer=RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user=serializer.save()
+            user.is_active = False
+            user.save()
+            send_email(user=user)
+            return Response({"message": "User created, please vertify your email"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class Register_vertify_view(APIView):
+    def post(self, request):
+        print(request.data)
+        serializer=ConfirmSerializer(data=request.data)
+        if serializer.is_valid():
+            token=serializer.validated_data['token']
+            try:
+                vertification=EmailVerification.objects.get(token=token)
+            except EmailVerification.DoesNotExist:
+                return Response({'message':'token doesnt exist'}, status=status.HTTP_404_NOT_FOUND)
+            vertification.is_verificated=True
+            vertification.save()
+        
+            user=vertification.user
+            user.is_active=True
+            user.save()
+            response=Response({"message": "Email successfully verified"}, status=status.HTTP_200_OK)
             refresh=RefreshToken.for_user(user)
-            response=Response({"message": "User created"}, status=status.HTTP_201_CREATED)
             response.set_cookie(
                 key=settings.SIMPLE_JWT["AUTH_COOKIE"],
                 value=str(refresh.access_token),

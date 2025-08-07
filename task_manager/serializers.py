@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import Task
+from .models import Task, EmailVerification
 from django.contrib.auth.models import User
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -36,3 +36,6 @@ class RegisterSerializer(serializers.Serializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+    
+class ConfirmSerializer(serializers.Serializer):
+    token=serializers.CharField()

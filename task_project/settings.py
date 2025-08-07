@@ -71,6 +71,14 @@ CSRF_COOKIE_SECURE = False #change in production
 
 ROOT_URLCONF = 'task_project.urls'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'nickprojectsmail@gmail.com'
+EMAIL_HOST_PASSWORD='sicx uzfi sgzp mduy'
+DEFAULT_FROM_EMAIL = 'noreply@TaskFrenzy.com'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

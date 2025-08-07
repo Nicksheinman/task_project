@@ -12,3 +12,9 @@ class Task(models.Model):
     time_update=models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name  
+    
+class EmailVerification(models.Model):
+    user=models.OneToOneField(User, on_delete=models.CASCADE, related_name='email_vertification')
+    token=models.CharField(max_length=64)
+    is_verificated=models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)

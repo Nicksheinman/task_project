@@ -8,6 +8,8 @@ import AboutUs from "./aboutUs/aboutUs";
 import Register_form from "./user/register";
 import LoginForm from "./user/login"
 import { Route, Routes } from "react-router-dom";
+import Message from "./user/emailMessage";
+import EmailConfirm from "./user/emailConfirm";
 
 export default function MainPage() {
   const [content, setContent]=useState('aboutUs');
@@ -21,6 +23,8 @@ export default function MainPage() {
         <Route path="/tasks" element={<Tasks/>}/>
         <Route path="/login_form" element={<LoginForm/>}/>
         <Route path="/register_form" element={<Register_form/>}/>
+        <Route path="/email_message" element={<Message/>}/>
+        <Route path="/email_confirm" element={<EmailConfirm/>}/>
       </Routes>
       <div className="content"></div>
     </div>

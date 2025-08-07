@@ -50,6 +50,27 @@ const login=async(username,password)=> {
     return response.data
 };
 
+const register=async(username,email, password, passwordSecond)=>{
+  try{
+    await api.post('http://localhost:8000/api/v1/token/register/', {'username':username,'email':email, "password":password, "password2":passwordSecond})
+    return 'Ok'
+  }
+  catch (err){
+    console.log(err.response?.data)
+    return (err.response?.data|| 'unknown error')
+  }
+}
+
+const vertifyEmail=async(token)=>{
+  try {
+    await api.post("http://localhost:8000/api/v1/token/Register_vertify_view/", {'token':token})
+    return "Ok"
+  }
+  catch(err) {
+    return (err.response?.data || 'unknown error')
+  }
+}
+
 const logout=async()=> {
     await api.get('token/logout/', { withCredentials:true});
 };
@@ -58,6 +79,7 @@ const refreshToken=async ()=> {
     const response= await api.post("token/refresh/", {}, { withCredentials:true});
     return response.data.access;
 };
+
 
 const getTask=async ()=> {
     const response=(await api.get('task/')).data;
@@ -106,6 +128,6 @@ const authCheck=async ()=> {
   else {return false}
 }
 
-export {login, refreshToken, getTask, postTask, authCheck, updateTasksAxios, deleteTasksAxios, logout};
+export {login, refreshToken, getTask, postTask, authCheck, updateTasksAxios, deleteTasksAxios, logout, register, vertifyEmail};
 
 export default api;
