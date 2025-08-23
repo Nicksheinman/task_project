@@ -1,5 +1,5 @@
 from django.urls import path,include, re_path
-from .views import TaskAPI, CookieTokenObtainPairView,CookieTokenRefreshView, AuthCheck,Get_csrf, Logout_view, Register_view, Register_vertify_view
+from .views import TaskAPI, CookieTokenObtainPairView,CookieTokenRefreshView, AuthCheck,Get_csrf, Logout_view, Register_view, Register_vertify_view, Avatar_view
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenVerifyView, 
@@ -19,4 +19,7 @@ urlpatterns = [
    path('v1/token/logout/', Logout_view.as_view(), name='token_logout'),
    path('v1/token/register/', Register_view.as_view(), name='token_register'),   
    path('v1/token/Register_vertify_view/', Register_vertify_view.as_view(), name='Register_vertify_view'),   
+   path('v1/profile/avatar/', Avatar_view.as_view(), name='user_avatar'),   
+   path('v1/profile/avatar/<int:user_id>/', Avatar_view.as_view(), name='another_user_avatar'),   
+   path('v1/profile/avatar/upload/', Avatar_view.as_view(), name='upload_avatar'),   
 ]

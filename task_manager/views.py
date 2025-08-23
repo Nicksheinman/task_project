@@ -4,10 +4,12 @@ from django.forms import model_to_dict
 from rest_framework.response import Response
 from django.shortcuts import render
 from .models import Task, EmailVerification
-from .serializers import TaskSerializer, RegisterSerializer, ConfirmSerializer
+from .serializers import TaskSerializer, RegisterSerializer, ConfirmSerializer, AvatarUploadSerializer, ProfileSerializer
 from .permissions import IsUserOrStaff
+from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.conf import settings
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
@@ -94,7 +96,7 @@ def Get_csrf(request):
 
 
 class Logout_view(APIView):
-    def get(self, request):
+    def get(self):
         response = Response({"detail": "Successfully logged out"})
         response.delete_cookie("refresh_token")
         response.delete_cookie("access_token")
@@ -113,7 +115,6 @@ class Register_view(APIView):
 
 class Register_vertify_view(APIView):
     def post(self, request):
-        print(request.data)
         serializer=ConfirmSerializer(data=request.data)
         if serializer.is_valid():
             token=serializer.validated_data['token']
@@ -123,7 +124,6 @@ class Register_vertify_view(APIView):
                 return Response({'message':'token doesnt exist'}, status=status.HTTP_404_NOT_FOUND)
             vertification.is_verificated=True
             vertification.save()
-        
             user=vertification.user
             user.is_active=True
             user.save()
@@ -135,9 +135,7 @@ class Register_vertify_view(APIView):
                 httponly=True,
                 secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
                 samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
-                max_age=60 *  15, 
-
-            )
+                max_age=60 *  15,)
             response.set_cookie(
                 key=settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"],
                 value=str(refresh),
@@ -148,3 +146,28 @@ class Register_vertify_view(APIView):
             )
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class Avatar_view(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+    def get_permission(self):
+        if self.request.method in ['POST']:
+            return [permissions.IsAuthenticated(), IsUserOrStaff()]
+        return [permissions.AllowAny()]
+    def post(self, request):
+        serializer=AvatarUploadSerializer(
+            instance=request.user.profile,
+            data=request.data,
+            partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return JsonResponse(Response({"ok": True}))
+    def get(self, request, user_id=None):
+        serializer=ProfileSerializer(obj=request.data)
+        if user_id:
+            User=get_user_model()
+            user=User.objects.get(pk=user_id)
+            profile=user.profile
+        else:
+            profile=request.user.profile
+        serializer=ProfileSerializer(profile)
+        return Response(serializer.data)
